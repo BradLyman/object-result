@@ -1,0 +1,25 @@
+{
+  "name": "object-result",
+  "version": "1.0.0",
+  "description": "Simple Rust-like Result object for basic error handling.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BradLyman/object-result.git"
+  },
+  "keywords": [
+    "Result",
+    "Option",
+    "Error",
+    "Handling"
+  ],
+  "author": "Brad lyman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BradLyman/object-result/issues"
+  },
+  "homepage": "https://github.com/BradLyman/object-result#readme"
+}
