@@ -8,45 +8,44 @@ A Result can either be Ok or Err.
 
 Results provided a few helper functions like is_err, get_err, and get_ok.
 More interesting are the control-flow operators, 'and_then' and 'or_else'.
-
-
-- ```result.or_else(fn)```
-  - executes ```fn``` if ```result``` is an Err. If ```fn``` returns nothing then
-    the original result is returned from ```or_else``` otherwise ```fn's``` return
+- `result.or_else(fn)`
+  - executes `fn` if `result` is an Err. If `fn` returns nothing then
+    the original result is returned from `or_else` otherwise `fn's` return
     value is used.
 
     Examples:
 
-    ```
+    ```JavaScript
     // Outputs "2" to the console and leaves result with a value of Err(2).
     var result = Err(2)
       .or_else(console.log);
     ```
 
-    ```
+    ```JavaScript
     // Leaves result with a value of Ok("fixed").
     var result = Err(2)
       .or_else(function(i) { return Ok("fixed"); });
     ```
-
-- ```result.and_then(fn)```
-  - executes ```fn``` if ```result``` isOk. If ```fn``` returns nothing then
-    the original result is returned from ```and_then``` otherwise ```fn's``` return
+- `result.and_then(fn)`
+  - executes `fn` if `result` isOk. If `fn` returns nothing then
+    the original result is returned from `and_then` otherwise `fn's` return
     value is used.
 
     Examples:
 
-    ```
+    ```JavaScript
     // Result is left with a value of Ok(9).
     var result = Ok(3)
       .and_then(function(i) { return Ok(i * 3); });
     ```
 
-    ```
+    ```JavaScript
     // Result is left with a value of Ok(3).
     var result = Ok(3)
       .and_then(console.log);
     ```
+
+
 ## Put It Together
 
 ```JavaScript
