@@ -1,2 +1,4 @@
 .tern-project
 out/
+*.swp
+

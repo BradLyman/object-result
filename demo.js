@@ -15,3 +15,4 @@ Err(2)
 Err(10)
   .or_else(timesTwo)
   .and_then(console.log);
+

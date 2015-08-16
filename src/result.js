@@ -5,51 +5,62 @@
  * @module object-result
  **/
 
-var createOkResult = function(ok) {
+/**
+ * @typedef Result
+ * @type {Object}
+ * @property {Function} get_err - Returns the Result's error value or undefined
+ *                                if there is no error.
+ * @property {Function} get_ok - Returns the Result's ok value or undefined if
+ *                               there is no ok value.
+ * @property {Function} is_err - Returns true if the result represents an error.
+ * @property {Function} and_then - Takes a callback which is executed if this
+ *                                 result is not an error. If the callback has
+ *                                 no return then "this" is returned, otherwise
+ *                                 the callback's return is returned by
+ *                                 and_then.
+ * @property {Function} or_else - Takes a callback which is executed if this
+ *                                result is an error. If the callback has no
+ *                                return then "this" is returned, otherwise
+ *                                the callback's return is returned by or_else.
+ **/
+
+/**
+ * Creates a result representing success using the provided value for
+ * the success value.
+ * @param {Object} ok - Value indicating successful computation.
+ * @return {@type Result}
+ **/
+module.exports.Ok = function(ok) {
   var my_ok = ok;
 
   return {
-    /** Returns err value or undefined */
     get_err  : function() { return undefined; },
-
-    /** Returns ok value or undefined  */
     get_ok   : function() { return my_ok; },
-
-    /** True if this represents an error */
     is_err   : function() { return false; },
-
-    /** Execute callback if this is an error */
     or_else  : function() { return this; },
-
-    /** Execute callback if this is an ok */
     and_then : function(cb) {
       return cb(my_ok) || this;
     }
   };
 };
 
-var createErrResult = function(err) {
+/**
+ * Creates result representing an Error using the provided value for the
+ * error value.
+ * @param {Object} err - Value indicating unsuccessful computation.
+ * @return {@type Result}
+ **/
+module.exports.Err = function(err) {
   var my_err = err;
 
   return {
-    /** Returns err value or undefined */
     get_err  : function() { return my_err; },
-
-    /** Returns ok value or undefined */
     get_ok   : function() { return undefined; },
-
-    /** True if this represents an error */
     is_err   : function() { return true; },
-
-    /** Execute callback if this is an ok */
     and_then : function() { return this; },
-
-    /** Execute callback if this is an error */
     or_else  : function(cb) {
       return cb(my_err) || this;
     }
   };
 };
 
-module.exports.Ok  = createOkResult;
-module.exports.Err = createErrResult;
