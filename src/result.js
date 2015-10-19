@@ -1,66 +1,122 @@
 /**
- * Contains methods for manipulating and using Result objects
- * which represent either a success (Ok) or failure (Err) for
- * an operation.
+ * This module exposes factory functions for creating result objects
+ * representing errors and successes.
  * @module object-result
  **/
+'use strict';
 
 /**
- * @typedef Result
- * @type {Object}
- * @property {Function} get_err - Returns the Result's error value or undefined
- *                                if there is no error.
- * @property {Function} get_ok - Returns the Result's ok value or undefined if
- *                               there is no ok value.
- * @property {Function} is_err - Returns true if the result represents an error.
- * @property {Function} and_then - Takes a callback which is executed if this
- *                                 result is not an error. If the callback has
- *                                 no return then "this" is returned, otherwise
- *                                 the callback's return is returned by
- *                                 and_then.
- * @property {Function} or_else - Takes a callback which is executed if this
- *                                result is an error. If the callback has no
- *                                return then "this" is returned, otherwise
- *                                the callback's return is returned by or_else.
+ * @class Result
  **/
+let Result = {};
 
-/**
- * Creates a result representing success using the provided value for
- * the success value.
- * @param {Object} ok - Value indicating successful computation.
- * @return {@type Result}
- **/
-module.exports.Ok = function(ok) {
-  var my_ok = ok;
 
-  return {
-    get_err  : function() { return undefined; },
-    get_ok   : function() { return my_ok; },
-    is_err   : function() { return false; },
-    or_else  : function() { return this; },
-    and_then : function(cb) {
-      return cb(my_ok) || this;
+Result.prototype = {
+  /** @lends Result **/
+
+  /**
+   * Retrieves the result's error object.
+   * @return {Object} Undefined is returned if this result isn't an error.
+   **/
+  get_err : function() { return this.err; },
+
+  /**
+   * Retrieves the result's ok object.
+   * @return {Object} Undefined is returned if this result isn't an ok.
+   **/
+  get_ok  : function() { return this.ok; },
+
+  /**
+   * Returns true when this result is an err.
+   * @return {boolean} true if this result represents an error.
+   **/
+  is_err  : function() { return (this.err !== undefined); },
+
+  /**
+   * Returns true when this result is an ok.
+   * @return {boolean} true if this result represents an ok.
+   **/
+  is_ok   : function() { return (this.ok !== undefined); },
+
+  /**
+   * Executes the provided function iff this result is not an err.
+   * @param {Function} fun - A callback which takes the ok value of
+   *                         this result.
+   * @return {Object} If fun is executed, then its return is returned
+   *                  from and_then -- otherwise "this" is returned.
+   **/
+  and_then : function(fun) {
+    if (this.is_ok()) {
+      return fun(this.get_ok());
     }
-  };
+
+    return this;
+  },
+
+  /**
+   * Executes the provided function iff this result is an err.
+   * @param {Function} fun - A callback which takes the err value of
+   *                         this result.
+   * @return {Object} If fun is executed then its return is returned
+   *                  from or_else -- otherwise "this" is returned.
+   **/
+  or_else : function(fun) {
+    if (this.is_err()) {
+      return fun(this.get_err());
+    }
+
+    return this;
+  },
+
+  /**
+   * Maps an ok value to a new ok value.
+   * @param {Function} fun - A callback which accpts the ok value and
+   *                         returns a new value to be used in the ok.
+   * @return {Result} An ok result with the payload created by the
+   *                  provided callback.
+   **/
+  map : function(fun) {
+    if (this.is_ok()) {
+      this.ok = fun(this.ok);
+    }
+    return this;
+  },
+
+  /**
+   * Maps an err value to a new err value.
+   * @param {Function} fun - A callback which accepts the err value and
+   *                         returns a new value to be used in the err.
+   * @return {Result} An err result with the err created by the provided
+   *                  callback.
+   **/
+  map_err : function(fun) {
+    if (this.is_err()) {
+      this.err = fun(this.err);
+    }
+    return this;
+  },
 };
 
 /**
- * Creates result representing an Error using the provided value for the
- * error value.
- * @param {Object} err - Value indicating unsuccessful computation.
- * @return {@type Result}
+ * Creates a new result object which represents an error.
+ * @param {Object} error - Some object which you use to represent your error.
+ * @return {Result} A result representing an error.
  **/
-module.exports.Err = function(err) {
-  var my_err = err;
+module.exports.createErr = function(error) {
+  let result = Object.create(Result.prototype);
+  result.err = error;
 
-  return {
-    get_err  : function() { return my_err; },
-    get_ok   : function() { return undefined; },
-    is_err   : function() { return true; },
-    and_then : function() { return this; },
-    or_else  : function(cb) {
-      return cb(my_err) || this;
-    }
-  };
+  return result;
 };
 
+/**
+ * Creates a new result object which represents a success.
+ * @param {Object} ok - Some object which you use to represent your success.
+ * @return {Result} A result representing a success.
+ **/
+module.exports.createOk = function(ok) {
+  let result = Object.create(Result.prototype);
+  result.ok = ok;
+
+  return result;
+};
