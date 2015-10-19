@@ -1,75 +1,73 @@
-# object-assign
+# object-result
 
-Simple error handling via "Result" objects which represent either an error
-or a successful computation.
+Result object represent either an error or a successful computation.
 
 ## Usage
-A Result can either be Ok or Err.
 
-Results provided a few helper functions like is_err, get_err, and get_ok.
-More interesting are the control-flow operators, 'and_then' and 'or_else'.
-- `result.or_else(fn)`
-  - executes `fn` if `result` is an Err. If `fn` returns nothing then
-    the original result is returned from `or_else` otherwise `fn's` return
-    value is used.
+Results are never created directly, instead object-assign exposes two factory
+functions, createErr and createOk, that construct result objects representing
+an error and an ok respectively.
 
-    Examples:
+```javascript
+  let objectResult = require('object-result'),
+      ok = objectResult.ok,
+      err = objectResult.err;
 
-    ```JavaScript
-    // Outputs "2" to the console and leaves result with a value of Err(2).
-    var result = Err(2)
-      .or_else(console.log);
-    ```
+  // creates a success result with an object used for the success value
+  let goodKitty = ok({ a : 100, b : "kitty" });
 
-    ```JavaScript
-    // Leaves result with a value of Ok("fixed").
-    var result = Err(2)
-      .or_else(function(i) { return Ok("fixed"); });
-    ```
-- `result.and_then(fn)`
-  - executes `fn` if `result` isOk. If `fn` returns nothing then
-    the original result is returned from `and_then` otherwise `fn's` return
-    value is used.
-
-    Examples:
-
-    ```JavaScript
-    // Result is left with a value of Ok(9).
-    var result = Ok(3)
-      .and_then(function(i) { return Ok(i * 3); });
-    ```
-
-    ```JavaScript
-    // Result is left with a value of Ok(3).
-    var result = Ok(3)
-      .and_then(console.log);
-    ```
-
-
-## Put It Together
-
-```JavaScript
-var objectResult = require('object-assign'),
-    Ok           = objectResult.Ok,
-    Err          = objectResult.Err;
-
-var timesTwo = function(i) { return Ok(i * 2); };
-
-// Prints 6 to the console
-Ok(3)
-  .and_then(timesTwo)
-  .and_then(console.log);
-
-// Prints 2 to the console
-Err(2)
-  .and_then(timesTwo)
-  .or_else(console.log);
-
-// Prints 20 to the console
-Err(10)
-  .or_else(timesTwo)
-  .and_then(console.log);
+  // creates an error result with an object used for the error value
+  let badKitty = err({ msg : "bad stuff, oh no!" });
 ```
 
+Sometimes you want to do some transformation on a success or error -- but you
+dont want to modify the relative success-state of the result. In this case,
+you would use the map/map_err methods.
 
+```javascript
+  // map the goodKitty's success value from the object (from above) to just
+  // a string.
+  goodKitty.map(function(value) {
+    return value.b;
+  });
 
+  // map the badKitty's error value from the object above to just a string
+  badKitty.map_err(function(errVal) {
+    return errVal.msg;
+  });
+
+  // map only effects ok's and map_err only effects err's
+  // so...
+
+  goodKitty.map_err(function(val) {
+    return "super " + val;
+  });
+
+  badKitty.map(function(errMsg) {
+    return "Error: " + errMsg;
+  });
+
+  // have no effect
+```
+
+Sometimes more flexibility is needed -- in particular you may need continue a
+computation but only if no error has occured. In this case, one should use
+the and_then/or_else methods.
+
+```javascript
+  // and_then is good for continuing successful computations
+  let newKitty = goodKitty.and_then(function(value) {
+    return some_operation_that_may_fail(value);
+  });
+
+  // or_else is good for handling errors -- or transforming them into successes
+  let newKitty = badKitty.or_else(function(value) {
+    return some_operation_that_may_fix_error(value);
+  });
+```
+
+It can be useful to chain or_else or and_then methods together. However, as a
+word of caution -- generally it is a mistake to chain or_else and and_then
+methods simultaneously. Use multiple and_then's to continue a successful
+computation, or use multiple or_else's to do complex error management, but
+don't try to do both at the same time! (it can get confusing very quickly)
