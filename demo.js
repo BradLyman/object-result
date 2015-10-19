@@ -1,5 +1,5 @@
 'use strict';
-let objectResult = require('./result.js'),
+let objectResult = require('./index.js'),
     ok           = objectResult.createOk,
     err          = objectResult.createErr;
 

@@ -103,10 +103,10 @@ Result.prototype = {
  * @return {Result} A result representing an error.
  **/
 module.exports.createErr = function(error) {
-  let result = Object.create(Result.prototype);
-  result.err = error;
-
-  return result;
+  return {
+    __proto__ : Result.prototype,
+    err     : error,
+  };
 };
 
 /**
@@ -115,8 +115,8 @@ module.exports.createErr = function(error) {
  * @return {Result} A result representing a success.
  **/
 module.exports.createOk = function(ok) {
-  let result = Object.create(Result.prototype);
-  result.ok = ok;
-
-  return result;
+  return {
+    __proto__ : Result.prototype,
+    ok      : ok,
+  };
 };
