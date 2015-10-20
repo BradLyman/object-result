@@ -47,7 +47,7 @@ Result.prototype = {
    **/
   and_then : function(fun) {
     if (this.is_ok()) {
-      return fun(this.get_ok());
+      return fun(this.get_ok()) || this;
     }
 
     return this;
@@ -62,7 +62,7 @@ Result.prototype = {
    **/
   or_else : function(fun) {
     if (this.is_err()) {
-      return fun(this.get_err());
+      return fun(this.get_err()) || this;
     }
 
     return this;
