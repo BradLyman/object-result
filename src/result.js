@@ -95,6 +95,25 @@ Result.prototype = {
     }
     return this;
   },
+
+  /**
+   * Matches the given functions to the state of this result. This is
+   * similar to a switch statement on the error status of the result.
+   * A matcher object is provided with optional ok and err functions.
+   * @param {Object} matcher - Should have two properties, ok and err.
+   * @return {Object} Returns the value of whichever function was called,
+   *                  or if the function didn't return then this result
+   *                  is retuned.
+   **/
+  match : function(matcher) {
+    switch (this.is_ok()) {
+      case true:
+        return matcher.ok(this.ok) || this;
+
+      case false:
+        return matcher.err(this.err) || this;
+    }
+  },
 };
 
 /**

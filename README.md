@@ -71,3 +71,14 @@ word of caution -- generally it is a mistake to chain or_else and and_then
 methods simultaneously. Use multiple and_then's to continue a successful
 computation, or use multiple or_else's to do complex error management, but
 don't try to do both at the same time! (it can get confusing very quickly)
+
+Usually when you want to chain and_then with an or_else you should really be
+using the match method. Match is effectively and_then and or_else together,
+but because it isn't chained it is less suprising.
+
+```javascript
+  let someKitty = goodKitty.match({
+    ok  : (val) => ok(val * 2),
+    err : (errVal) => ok(10)
+  });
+```

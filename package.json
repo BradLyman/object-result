@@ -1,6 +1,6 @@
 {
   "name": "object-result",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "Simple Rust-like Result object for basic error handling.",
   "main": "index.js",
   "scripts": {
